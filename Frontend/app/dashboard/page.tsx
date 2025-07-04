@@ -71,7 +71,7 @@ export default function Dashboard() {
       if (!token) return
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/donations/my`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/donations/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
