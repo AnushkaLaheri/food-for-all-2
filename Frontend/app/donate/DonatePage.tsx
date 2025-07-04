@@ -238,7 +238,7 @@ export default function DonatePage() {
 
 
       // Submit donation data
-     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/donations`, {
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/donations`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -23,7 +23,7 @@ const [loading, setLoading] = useState(true)
 useEffect(() => {
   const fetchDonations = async () => {
     try {
-     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/donations`);
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/donations`);
      const data = await res.json();
      console.log("API response:", data);
 
