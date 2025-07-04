@@ -33,7 +33,11 @@ export default function ProfilePage() {
 
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`, {
-        headers: { Authorization: token },
+        method: "GET",  
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", // only needed for PUT
+        },
         })
 
         const data = await res.json()
@@ -59,8 +63,9 @@ export default function ProfilePage() {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
       },
+
       body: JSON.stringify(userData),
 
 
