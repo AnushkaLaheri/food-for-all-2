@@ -238,15 +238,16 @@ export default function DonatePage() {
 
 
       // Submit donation data
-      const res = await fetch("http://localhost:5000/api/donations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(donationData),
-        credentials: "include"
-      })
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/donations`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(donationData),
+      credentials: "include",
+    });
+
 
       const resData = await res.json()
 

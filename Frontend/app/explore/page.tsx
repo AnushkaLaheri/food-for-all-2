@@ -23,9 +23,10 @@ const [loading, setLoading] = useState(true)
 useEffect(() => {
   const fetchDonations = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/donations")
-      const data = await res.json()
-      console.log("API response:", data)
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/donations`);
+     const data = await res.json();
+     console.log("API response:", data);
+
 
       // Ensure the response is an array
       if (Array.isArray(data)) {

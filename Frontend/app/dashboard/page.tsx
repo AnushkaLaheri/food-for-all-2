@@ -71,8 +71,12 @@ export default function Dashboard() {
       if (!token) return
 
       try {
-        const res = await fetch("http://localhost:5000/api/donations/my", {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/donations/my`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+
         })
         const data = await res.json()
         setDonations(data)
