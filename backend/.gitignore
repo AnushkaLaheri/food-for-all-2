@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# OS/IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# Uploads (optional: ignore uploaded files if they are generated or temp)
+uploads/
+
+# Coverage reports
+coverage/
+
+# Production files (optional)
+dist/
