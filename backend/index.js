@@ -7,6 +7,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.js";
 import donationRoutes from "./routes/donation.js";
 import uploadRoutes from "./routes/upload.js";
+import leaderboardRoutes from "./routes/leaderboard.js" 
 
 dotenv.config();
 connectDB();
@@ -49,6 +50,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 // Root route
 app.get("/", (req, res) => {

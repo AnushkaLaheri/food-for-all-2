@@ -12,12 +12,31 @@ import { cn } from "@/lib/utils"
 import confetti from "canvas-confetti"
 
 export default function LeaderboardPage() {
+  const [topDonors, setTopDonors] = useState<any[]>([])
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leaderboard`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        if (!res.ok) throw new Error("Network response was not ok")
+        const data = await res.json()
+        setTopDonors(data)
+      } catch (err) {
+        console.error("Failed to load leaderboard", err)
+      }
+    }
+
+    fetchLeaderboard()
     setMounted(true)
 
-    // Trigger confetti when the page loads
+    // Only trigger confetti once on client mount
     if (typeof window !== "undefined") {
       confetti({
         particleCount: 100,
@@ -26,81 +45,6 @@ export default function LeaderboardPage() {
       })
     }
   }, [])
-
-  const topDonors = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      avatar: "/placeholder.svg?height=40&width=40&text=SJ",
-      donations: 42,
-      impact: 1240,
-      level: "Gold",
-      progress: 85,
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      avatar: "/placeholder.svg?height=40&width=40&text=MC",
-      donations: 38,
-      impact: 1120,
-      level: "Gold",
-      progress: 78,
-    },
-    {
-      id: 3,
-      name: "Jessica Williams",
-      avatar: "/placeholder.svg?height=40&width=40&text=JW",
-      donations: 35,
-      impact: 980,
-      level: "Silver",
-      progress: 92,
-    },
-    {
-      id: 4,
-      name: "David Kim",
-      avatar: "/placeholder.svg?height=40&width=40&text=DK",
-      donations: 29,
-      impact: 870,
-      level: "Silver",
-      progress: 65,
-    },
-    {
-      id: 5,
-      name: "Emily Rodriguez",
-      avatar: "/placeholder.svg?height=40&width=40&text=ER",
-      donations: 27,
-      impact: 810,
-      level: "Silver",
-      progress: 54,
-    },
-    {
-      id: 6,
-      name: "James Wilson",
-      avatar: "/placeholder.svg?height=40&width=40&text=JW",
-      donations: 24,
-      impact: 720,
-      level: "Bronze",
-      progress: 88,
-    },
-    {
-      id: 7,
-      name: "Sophia Garcia",
-      avatar: "/placeholder.svg?height=40&width=40&text=SG",
-      donations: 22,
-      impact: 660,
-      level: "Bronze",
-      progress: 76,
-    },
-    {
-      id: 8,
-      name: "Daniel Martinez",
-      avatar: "/placeholder.svg?height=40&width=40&text=DM",
-      donations: 19,
-      impact: 570,
-      level: "Bronze",
-      progress: 42,
-    },
-  ]
 
   const getBadgeColor = (level: string) => {
     switch (level) {
@@ -127,6 +71,7 @@ export default function LeaderboardPage() {
         return null
     }
   }
+
 
   return (
     <div className="container py-8 px-4 md:px-6">
