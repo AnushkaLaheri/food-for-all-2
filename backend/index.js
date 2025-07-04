@@ -32,7 +32,7 @@ app.use(cors({
       return callback(new Error("Not allowed by CORS"))
     }
   },
-  credentials: false, // Only use true if using cookies
+  credentials: true, // Only use true if using cookies
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }))
