@@ -18,6 +18,8 @@ export default function LoginPage() {
     const email = form.email.value;
     const password = form.password.value;
 
+    console.log({ email, password });
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
       method: "POST",
