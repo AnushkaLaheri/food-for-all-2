@@ -17,6 +17,9 @@ import { cn } from "@/lib/utils"
 
 export default function ProfilePage() {
   const [editMode, setEditMode] = useState(false)
+  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string>("")
+
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -24,6 +27,7 @@ export default function ProfilePage() {
     address: "",
     bio: "",
     role: "Consumer",
+    image: "",
   })
 
   useEffect(() => {
@@ -55,33 +59,66 @@ export default function ProfilePage() {
   }, [])
 
   const handleSaveChanges = async () => {
-    const token = localStorage.getItem("token")
-    if (!token) return
+  const token = localStorage.getItem("token")
+  if (!token) return
+
+  let imageUrl = userData.image
+
+  // ✅ 1. Upload image if selected
+  if (profileImage) {
+    const formData = new FormData()
+    formData.append("image", profileImage)
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`, {
+      const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/profile-image`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      const uploadData = await uploadRes.json()
+
+      if (uploadRes.ok) {
+        imageUrl = uploadData.imageUrl
+        console.log("✅ Uploaded profile image:", imageUrl)
+      } else {
+        console.error("❌ Upload failed:", uploadData.message)
+      }
+    } catch (err) {
+      console.error("❌ Error uploading image:", err)
+    }
+  }
+
+  // ✅ 2. Send profile data (with image URL if available)
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ ...userData, image: imageUrl }),
+    })
+    console.log("PUT /api/auth/profile response status:", res.status)
 
-      body: JSON.stringify(userData),
+    const text = await res.text()
+    console.log("Raw response text:", text)
 
-
-      })
-
-      const data = await res.json()
-      if (res.ok) {
-        setEditMode(false)
-        console.log("Profile updated successfully")
-      } else {
-        console.error("Update failed:", data.message)
-      }
-    } catch (err) {
-      console.error("Error updating profile:", err)
+    const data = JSON.parse(text)
+    if (!res.ok) {
+      console.error("Update failed:", data.message)
+      return
     }
+
+    setUserData({ ...userData, image: imageUrl })
+    setEditMode(false)
+    console.log("✅ Profile updated successfully")
+  } catch (err) {
+    console.error("❌ Error updating profile:", err)
   }
+}
 
   const achievements = [
     { id: 1, name: "First Donation", description: "Made your first food donation", icon: Gift, date: "Jan 15, 2023", unlocked: true },
@@ -97,6 +134,37 @@ export default function ProfilePage() {
     { id: 2, name: "Fresh Bread Assortment", category: "Bakery", date: "May 2, 2023", recipient: "John Smith", image: "/placeholder.svg" },
     { id: 3, name: "Vegetable Soup", category: "Cooked Meal", date: "Apr 28, 2023", recipient: "Emily Johnson", image: "/placeholder.svg" },
   ]
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append("image", file)
+
+  const token = localStorage.getItem("token")
+  if (!token) return
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/profile-image`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
+
+    const data = await res.json()
+    if (res.ok) {
+      // Update user's profile picture in state
+      setUserData((prev) => ({ ...prev, image: data.imageUrl }))
+    } else {
+      console.error("Upload failed:", data.message)
+    }
+  } catch (err) {
+    console.error("Error uploading image:", err)
+  }
+}
+
 
   return (
     <div className="container py-8 px-4 md:px-6">
@@ -114,21 +182,41 @@ export default function ProfilePage() {
                   <Edit className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="flex flex-col items-center">
+              
+              <div className="flex flex-col items-center relative">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarImage
+                    src={
+                      previewUrl ||
+                      (userData.image ? `${process.env.NEXT_PUBLIC_API_URL}${userData.image}` : "/placeholder.svg")
+                    }
+                  />
+                  <AvatarFallback>{userData.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 {editMode && (
-                  <div className="absolute bottom-0 right-0 rounded-full bg-primary p-1 text-white">
+                  <label htmlFor="profile-image" className="absolute bottom-0 right-0 cursor-pointer bg-primary text-white p-1 rounded-full">
                     <Camera className="h-4 w-4" />
-                  </div>
+                    <input
+                      id="profile-image"
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          setProfileImage(file)
+                          setPreviewUrl(URL.createObjectURL(file))
+                        }
+                      }}
+                    />
+                  </label>
                 )}
-                <CardTitle className="mt-4">{userData.name}</CardTitle>
-                <CardDescription>
-                  <Badge className="mt-1 bg-amber-700 text-white">Bronze Donor</Badge>
-                </CardDescription>
-              </div>
+              <CardTitle className="mt-4">{userData.name}</CardTitle>
+              <CardDescription>
+                <Badge className="mt-1 bg-amber-700 text-white">Bronze Donor</Badge>
+              </CardDescription>
+            </div>
+
             </CardHeader>
             <CardContent className="space-y-4">
               {editMode ? (

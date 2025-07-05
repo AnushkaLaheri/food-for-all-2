@@ -73,3 +73,54 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// ✅ Get user profile
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ✅ Update user profile
+export const updateUserProfile = async (req, res) => {
+  try {
+    console.log("🔄 Updating profile...");
+    console.log("🟡 req.user:", req.user);
+    console.log("🟡 req.body:", req.body);
+
+    const userId = req.user?.id; // Make sure authMiddleware sets req.user
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: No user ID found" });
+    }
+
+    const updatedFields = {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      address: req.body.address,
+      bio: req.body.bio,
+      image: req.body.image, // Make sure this exists in your User schema
+    };
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updatedFields },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("✅ User updated:", user);
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("❌ Error in updateUserProfile:", error);
+    return res.status(500).json({ message: "Update failed", error: error.message });
+  }
+};

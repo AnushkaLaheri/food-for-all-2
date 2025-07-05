@@ -9,7 +9,7 @@ import Image from "next/image"
 type Donation = {
   _id: string
   foodName: string
-  photo?: string
+  photos?: string []
   category?: string
   description?: string
   donatedBy?: {
@@ -177,7 +177,7 @@ export default function Home() {
           >
             <div className="aspect-video w-full overflow-hidden">
               <Image
-                src={donation.photo || "/placeholder.svg?height=300&width=500&text=No+Image"}
+                src={donation.photos?.[0] || "/placeholder.svg?height=300&width=500&text=No+Image"}
                 alt={donation.foodName}
                 width={500}
                 height={300}

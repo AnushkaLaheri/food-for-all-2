@@ -24,7 +24,8 @@ router.get("/recent", async (req, res) => {
   try {
     const recentDonations = await Donation.find()
       .sort({ createdAt: -1 })
-      .limit(3);
+      .limit(3)
+      .select("foodName description photos category donatedBy");
     res.status(200).json(recentDonations);
   } catch (error) {
     console.error("Error fetching recent donations:", error.message);
