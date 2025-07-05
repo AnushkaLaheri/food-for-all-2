@@ -18,6 +18,8 @@ export default function LeaderboardPage() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
+        console.log("Fetching leaderboard from:", process.env.NEXT_PUBLIC_API_URL)
+
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leaderboard`, {
           method: "GET",
           headers: {
