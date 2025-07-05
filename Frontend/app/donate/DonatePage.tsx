@@ -17,6 +17,9 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/components/ui/use-toast"
+import confetti from "canvas-confetti"
+
+
 
 // Define validation schema for each step
 const step1Schema = z.object({
@@ -75,7 +78,7 @@ export default function DonatePage() {
   const [notes, setNotes] = useState("")
 
   // Step 3 states
-  const [photos, setPhotos] = useState<File[]>([])
+  const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([])
   const [termsChecked, setTermsChecked] = useState(false)
   const [privacyChecked, setPrivacyChecked] = useState(false)
 
@@ -91,11 +94,16 @@ export default function DonatePage() {
   
   // Handle photo uploads
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const fileArray = Array.from(e.target.files)
-      setPhotos(fileArray)
-    }
+  if (e.target.files && e.target.files.length > 0) {
+    const fileArray = Array.from(e.target.files)
+    const updatedPhotos = fileArray.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }))
+    setPhotos(updatedPhotos)
   }
+}
+
   
     // Validate current step
   const validateStep = (stepNumber: number) => {
@@ -123,7 +131,7 @@ export default function DonatePage() {
         })
       } else if (stepNumber === 3) {
         step3Schema.parse({
-          photos,
+          photos: photos.map((p) => p.file), // ✅ extract only File objects
           terms: termsChecked,
           privacy: privacyChecked,
         })
@@ -131,6 +139,7 @@ export default function DonatePage() {
       setErrors({})
       return true
     } catch (error) {
+      console.error("❌ Zod validation error:", error)
       if (error instanceof z.ZodError) {
         const newErrors: Record<string, string> = {}
         error.errors.forEach((err) => {
@@ -156,6 +165,7 @@ export default function DonatePage() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    console.log("🚀 handleSubmit triggered");
 
     // Get token from localStorage
     let token = ""
@@ -175,9 +185,10 @@ export default function DonatePage() {
     const formData = new FormData(form)
     
     // Validate final step
-    if (!validateStep(step)) {
-      return
-    }
+    const isValid = validateStep(step)
+    console.log("✅ Validation Passed:", isValid);
+    if (!isValid) return
+
 
     // Get selected pickup days
     const selectedPickupDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].filter((day) => {
@@ -187,15 +198,15 @@ export default function DonatePage() {
     try {
       // Upload photos first if any
       let photoUrls: string[] = []
-      
-      /*if (photos.length > 0) {
+      console.log("📸 Uploading photos...");
+      if (photos.length > 0) {
         const photoFormData = new FormData()
-        photos.forEach((photo) => {
-          photoFormData.append(`photos`, photo)
-        })
+        photos.forEach(({ file }) => {
+        photoFormData.append("photos", file)
+      })
+
         
-        const photoRes = await fetch("http://localhost:5000/api/uploads", {
-          method: "POST",
+        const photoRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/uploads`, {          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -209,7 +220,7 @@ export default function DonatePage() {
         
         const photoData = await photoRes.json()
         photoUrls = photoData.urls || []
-      }*/
+      }
       
       // Prepare donation data
       const donationData = {
@@ -235,6 +246,7 @@ export default function DonatePage() {
 
 
       console.log("Submitting donation:", donationData);
+      console.log("🌍 API endpoint:", `${process.env.NEXT_PUBLIC_API_URL}/api/donations`);
 
 
       // Submit donation data
@@ -250,17 +262,27 @@ export default function DonatePage() {
 
 
       const resData = await res.json()
+      console.log("📨 Server response:", res.status);
+console.log("📨 Response JSON:", resData);
 
       if (res.ok) {
         toast({
-          title: "🎉 Donation submitted!",
-          description: "Thank you for your generosity.",
-          action: (
-            <div className="h-8 w-8 bg-emerald-500/20 rounded-full flex items-center justify-center">
-              <Check className="h-5 w-5 text-emerald-500" />
-            </div>
-          ),
-        })
+  title: "🎉 Donation submitted!",
+  description: "Thank you for your generosity.",
+  action: (
+    <Button variant="ghost" size="sm" onClick={() => console.log("Toast action clicked")}>
+      Got it!
+    </Button>
+  ),
+  duration: 5000,
+})
+
+        confetti({
+  particleCount: 150,
+  spread: 70,
+  origin: { y: 0.6 },
+})
+
         // Reset form
         setStep(1)
         setFoodName("")
@@ -407,9 +429,11 @@ export default function DonatePage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="cooked">Cooked</SelectItem>
-                          <SelectItem value="uncooked">Uncooked</SelectItem>
+                          <SelectItem value="dairy">Dairy</SelectItem>
                           <SelectItem value="packed">Packed</SelectItem>
                           <SelectItem value="bakery">Bakery</SelectItem>
+                          <SelectItem value="produced">Produced</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>
                       {errors.category && (
@@ -672,6 +696,21 @@ export default function DonatePage() {
                         onChange={handlePhotoChange}
                       />
                     </div>
+
+                    {photos.length > 0 && (
+                      <div className="flex flex-wrap gap-4 mt-4">
+                        {photos.map((photo, idx) => (
+                          <div key={idx} className="w-24 h-24 relative border rounded overflow-hidden">
+                            <img
+                              src={photo.preview}
+                              alt={`Preview ${idx}`}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
 
                     <div className="flex items-center space-x-2">
                       <Checkbox

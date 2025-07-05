@@ -1,10 +1,47 @@
+"use client"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, Heart, Utensils, Users } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 
+type Donation = {
+  _id: string
+  foodName: string
+  photo?: string
+  category?: string
+  description?: string
+  donatedBy?: {
+    name?: string
+  }
+}
+
+type Stats = {
+  totalDonations: number
+  totalUsers: number
+  totalCommunities: number
+}
+
+
 export default function Home() {
+  const [recentDonations, setRecentDonations] = useState<Donation[]>([])
+  const [stats, setStats] = useState<Stats | null>(null)
+
+
+  useEffect(() => {
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/donations/recent`)
+    .then((res) => res.json())
+    .then((data) => setRecentDonations(data))
+    .catch((err) => console.error("Failed to fetch recent donations", err))
+
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/donations/stats`)
+    .then((res) => res.json())
+    .then((data) => setStats(data))
+    .catch((err) => console.error("Failed to fetch stats", err))
+}, [])
+ 
+  
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -44,33 +81,46 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 bg-muted/50">
-        <div className="container px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm border animate-fade-in-up">
-              <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
-                <Utensils className="h-6 w-6" />
-              </div>
-              <h3 className="text-3xl font-bold">12,450+</h3>
-              <p className="text-muted-foreground">Meals Donated</p>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm border animate-fade-in-up animation-delay-100">
-              <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
-                <Users className="h-6 w-6" />
-              </div>
-              <h3 className="text-3xl font-bold">5,280+</h3>
-              <p className="text-muted-foreground">Active Users</p>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm border animate-fade-in-up animation-delay-200">
-              <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
-                <Heart className="h-6 w-6" />
-              </div>
-              <h3 className="text-3xl font-bold">320+</h3>
-              <p className="text-muted-foreground">Communities Served</p>
-            </div>
-          </div>
+<section className="py-12 bg-muted/50">
+  <div className="container px-4 md:px-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Meals Donated */}
+      <div className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm border animate-fade-in-up">
+        <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+          <Utensils className="h-6 w-6" />
         </div>
-      </section>
+        <h3 className="text-3xl font-bold">
+          {stats?.totalDonations != null ? `${stats.totalDonations.toLocaleString()}+` : "Loading..."}
+        </h3>
+
+        <p className="text-muted-foreground">Meals Donated</p>
+      </div>
+
+      {/* Active Users */}
+      <div className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm border animate-fade-in-up animation-delay-100">
+        <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+          <Users className="h-6 w-6" />
+        </div>
+        <h3 className="text-3xl font-bold">
+          {stats?.totalUsers != null ? `${stats.totalUsers.toLocaleString()}+` : "Loading..."}
+        </h3>
+        <p className="text-muted-foreground">Active Users</p>
+      </div>
+
+      {/* Communities Served */}
+      <div className="flex flex-col items-center text-center space-y-2 p-6 bg-background rounded-lg shadow-sm border animate-fade-in-up animation-delay-200">
+        <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+          <Heart className="h-6 w-6" />
+        </div>
+       <h3 className="text-3xl font-bold">
+        {stats?.totalCommunities != null ? `${stats.totalCommunities.toLocaleString()}+` : "Loading..."}
+      </h3>
+        <p className="text-muted-foreground">Communities Served</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       {/* How It Works */}
       <section className="py-16 md:py-24">
@@ -109,56 +159,67 @@ export default function Home() {
       </section>
 
       {/* Featured Donations */}
-      <section className="py-16 bg-muted/50">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center text-center space-y-4 mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">Featured Donations</h2>
-            <p className="text-muted-foreground text-lg max-w-[700px]">
-              Check out some of the recent food donations from our community.
-            </p>
-          </div>
+<section className="py-16 bg-muted/50">
+  <div className="container px-4 md:px-6">
+    <div className="flex flex-col items-center text-center space-y-4 mb-12">
+      <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">Featured Donations</h2>
+      <p className="text-muted-foreground text-lg max-w-[700px]">
+        Check out some of the recent food donations from our community.
+      </p>
+    </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="group relative overflow-hidden rounded-lg border bg-background shadow-sm transition-all hover:shadow-md animate-fade-in-up"
-              >
-                <div className="aspect-video w-full overflow-hidden">
-                  <Image
-                    src={`/placeholder.svg?height=300&width=500&text=Food+Item+${i}`}
-                    alt={`Food donation ${i}`}
-                    width={500}
-                    height={300}
-                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-4">
-                  <Badge className="mb-2" variant="outline">
-                    Fresh
-                  </Badge>
-                  <h3 className="text-xl font-bold mb-2">Homemade Pasta</h3>
-                  <p className="text-muted-foreground text-sm mb-4">
-                    Freshly made pasta with tomato sauce. Enough for 4-6 people.
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">2 miles away</span>
-                    <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Available Now</span>
-                  </div>
-                </div>
+    {recentDonations.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {recentDonations.slice(0, 3).map((donation) => (
+          <div
+            key={donation._id}
+            className="group relative overflow-hidden rounded-lg border bg-background shadow-sm transition-all hover:shadow-md animate-fade-in-up"
+          >
+            <div className="aspect-video w-full overflow-hidden">
+              <Image
+                src={donation.photo || "/placeholder.svg?height=300&width=500&text=No+Image"}
+                alt={donation.foodName}
+                width={500}
+                height={300}
+                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+              />
+            </div>
+            <div className="p-4">
+              <Badge className="mb-2" variant="outline">
+                {donation.category || "Uncategorized"}
+              </Badge>
+              <h3 className="text-xl font-bold mb-2">{donation.foodName}</h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                {donation.description || "No description provided."}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {donation.donatedBy?.name || "Anonymous"}
+                </span>
+                <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                  Available Now
+                </span>
               </div>
-            ))}
+            </div>
           </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-muted-foreground text-center mt-8">
+        No recent donations available.
+      </div>
+    )}
 
-          <div className="flex justify-center mt-8">
-            <Link href="/explore">
-              <Button variant="outline">
-                View All Donations <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+    <div className="flex justify-center mt-8">
+      <Link href="/explore">
+        <Button variant="outline">
+          View All Donations <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </Link>
+    </div>
+  </div>
+</section>
+
 
       {/* CTA Section */}
       <section className="py-20 relative overflow-hidden">
