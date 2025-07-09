@@ -109,17 +109,17 @@ This project is developed and maintained by:
 
 📧 Email: anushkalaheri@gmail.com
 
-🔗 LinkedIn: Anushka Laheri
+🔗 LinkedIn: [Anushka Laheri](https://www.linkedin.com/in/anushka-laheri)
 
-🐙 GitHub: @AnushkaLaheri
+🐙 GitHub: [@AnushkaLaheri](https://github.com/AnushkaLaheri)
 
 ### Garima Raj
 
 📧 Email: garimaraj536@gmail.com
 
-🔗 LinkedIn: Garima Raj
+🔗 LinkedIn: [Garima Raj](https://www.linkedin.com/in/garima-raj-59a654319)
 
-🐙 GitHub: @Garimaraj15
+🐙 GitHub: [@Garimaraj15](https://github.com/Garimaraj15)
 
 
 
