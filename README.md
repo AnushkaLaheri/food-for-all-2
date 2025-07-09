@@ -81,13 +81,13 @@ npm run dev
 
 ---
 
-### ⚙️ Environment Variables
+## ⚙️ Environment Variables
 Create a .env file in both frontend/ and backend/ folders.
 
-## Frontend .env
+# Frontend .env
 NEXT_PUBLIC_API_URL=https://food-for-all-2.onrender.com/api
 
-## Backend .env
+# Backend .env
 PORT=5000
 MONGO_URI=your-mongodb-uri
 JWT_SECRET=your_jwt_secret
@@ -105,7 +105,7 @@ JWT_SECRET=your_jwt_secret
 ### 🤝 Contributions
 This project is developed and maintained by:
 
-## Anushka Laheri
+# Anushka Laheri
 
 📧 Email: anushkalaheri@gmail.com
 
@@ -113,7 +113,7 @@ This project is developed and maintained by:
 
 🐙 GitHub: @AnushkaLaheri
 
-## Garima Raj
+# Garima Raj
 
 📧 Email: garimaraj536@gmail.com
 
