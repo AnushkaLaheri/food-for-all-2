@@ -60,19 +60,19 @@
 ## 🚀 Installation
 
 
-# Clone the repository
+### Clone the repository
 git clone https://github.com/AnushkaLaheri/food-for-all-2.git
 
 cd food-for-all-2
 
-# Frontend setup
+### Frontend setup
 cd frontend
 
 npm install
 
 npm run dev
 
-# Backend setup
+### Backend setup
 cd ../backend
 
 npm install
@@ -84,16 +84,16 @@ npm run dev
 ## ⚙️ Environment Variables
 Create a .env file in both frontend/ and backend/ folders.
 
-# Frontend .env
+### Frontend .env
 NEXT_PUBLIC_API_URL=https://food-for-all-2.onrender.com/api
 
-# Backend .env
+### Backend .env
 PORT=5000
 MONGO_URI=your-mongodb-uri
 JWT_SECRET=your_jwt_secret
 
 
-### 🔒 Security Highlights
+## 🔒 Security Highlights
 - CORS with origin whitelisting
 
 - Multer validation for safe image uploads
@@ -102,10 +102,10 @@ JWT_SECRET=your_jwt_secret
 
 - Role-based access control
 
-### 🤝 Contributions
+## 🤝 Contributions
 This project is developed and maintained by:
 
-# Anushka Laheri
+### Anushka Laheri
 
 📧 Email: anushkalaheri@gmail.com
 
@@ -113,7 +113,7 @@ This project is developed and maintained by:
 
 🐙 GitHub: @AnushkaLaheri
 
-# Garima Raj
+### Garima Raj
 
 📧 Email: garimaraj536@gmail.com
 
@@ -123,5 +123,5 @@ This project is developed and maintained by:
 
 
 
-### 🙏 Acknowledgements
+## 🙏 Acknowledgements
 Thanks to everyone supporting open innovation for social good. This project was developed with the goal of addressing real-world challenges like hunger and food waste using modern full-stack web technologies.
