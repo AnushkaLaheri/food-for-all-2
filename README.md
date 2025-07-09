@@ -92,6 +92,7 @@ PORT=5000
 MONGO_URI=your-mongodb-uri
 JWT_SECRET=your_jwt_secret
 
+---
 
 ## 🔒 Security Highlights
 - CORS with origin whitelisting
@@ -101,6 +102,9 @@ JWT_SECRET=your_jwt_secret
 - JWT-based authentication and protected routes
 
 - Role-based access control
+
+---
+
 
 ## 🤝 Contributions
 This project is developed and maintained by:
@@ -121,7 +125,7 @@ This project is developed and maintained by:
 
 🐙 GitHub: [@Garimaraj15](https://github.com/Garimaraj15)
 
-
+---
 
 ## 🙏 Acknowledgements
 Thanks to everyone supporting open innovation for social good. This project was developed with the goal of addressing real-world challenges like hunger and food waste using modern full-stack web technologies.
