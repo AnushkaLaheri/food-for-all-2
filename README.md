@@ -62,16 +62,21 @@
 
 # Clone the repository
 git clone https://github.com/AnushkaLaheri/food-for-all-2.git
+
 cd food-for-all-2
 
 # Frontend setup
 cd frontend
+
 npm install
+
 npm run dev
 
 # Backend setup
 cd ../backend
+
 npm install
+
 npm run dev
 
 ---
